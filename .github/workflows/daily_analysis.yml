@@ -1,3 +1,13 @@
+    - name: 获取Runner公网IP
+      id: ip 云上
+      uses: haythem/public-ip@v1.3
+
+    - name: 打印Runner公网IP
+      run: |
+        echo "🌐 GitHub Actions Runner的IPv4地址是: ${{ steps.ip.outputs.ipv4 }}"
+        echo "🌐 IPv6地址是: ${{ steps.ip.outputs.ipv6 }}"
+ 
+
 name: 每日股票分析
 
 on:
