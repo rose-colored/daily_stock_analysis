@@ -37,6 +37,13 @@ jobs:
     timeout-minutes: 30
     
     steps:
+        
+      - name: 设置代理环境变量
+        run: |
+          echo "HTTP_PROXY=http://127.0.0.1:7890" >> $GITHUB_ENV
+          echo "HTTPS_PROXY=http://127.0.0.1:7890" >> $GITHUB_ENV
+          echo "NO_PROXY=localhost,127.0.0.1" >> $GITHUB_ENV
+
       - name: 获取 Runner 公网 IP
         id: ip
         run: |
