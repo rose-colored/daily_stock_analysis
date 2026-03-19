@@ -1,11 +1,20 @@
-    - name: 获取Runner公网IP
-      id: ip 云上
-      uses: haythem/public-ip@v1.3
-
-    - name: 打印Runner公网IP
+    - name: 获取 Runner 公网 IP (自写命令)
+      id: ip
       run: |
-        echo "🌐 GitHub Actions Runner的IPv4地址是: ${{ steps.ip.outputs.ipv4 }}"
-        echo "🌐 IPv6地址是: ${{ steps.ip.outputs.ipv6 }}"
+        echo "🌐 正在获取 Runner 的公网 IP..."
+        # 使用 ipify.org 获取 IP，-s 让 curl 静默运行，避免日志太乱
+        RUNNER_IP=$(curl -s https://api.ipify.org)
+        echo "获取到的 IP 地址为: $RUNNER_IP"
+        # 将 IP 地址保存到 GITHUB_OUTPUT 中，这样后续步骤可以通过 steps.ip.outputs.ipv4 引用
+        echo "ipv4=$RUNNER_IP" >> $GITHUB_OUTPUT
+
+    - name: 打印并确认 Runner IP
+      run: |
+        echo "✅ GitHub Actions Runner 的 IPv4 地址是: ${{ steps.ip.outputs.ipv4 }}"
+        # 你也可以同时用另一个服务验证一下，确保没问题
+        echo "🔍 用另一个服务验证:"
+        curl -s https://ipinfo.io/ip
+        echo "" # 换行
  
 
 name: 每日股票分析
