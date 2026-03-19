@@ -38,19 +38,28 @@ jobs:
     
     steps:
         
-      - name: 设置代理环境变量
+      - name: 设置代理并获取 IP
         run: |
-          echo "HTTP_PROXY=http://127.0.0.1:7890" >> $GITHUB_ENV
-          echo "HTTPS_PROXY=http://127.0.0.1:7890" >> $GITHUB_ENV
-          echo "NO_PROXY=localhost,127.0.0.1" >> $GITHUB_ENV
-
-      - name: 获取 Runner 公网 IP
-        id: ip
-        run: |
+          # 设置代理环境变量
+          echo "HTTP_PROXY=http://127.0.0.1:7890"
+          echo "HTTPS_PROXY=http://127.0.0.1:7890"
+          export HTTP_PROXY=http://127.0.0.1:7890
+          export HTTPS_PROXY=http://127.0.0.1:7890
+          export NO_PROXY=localhost,127.0.0.1
+          
+          # 等待1秒让代理连接建立
+          sleep 1
+          
+          # 获取 IP（明确指定使用 curl 的完整路径，避免环境问题）
           echo "正在获取 Runner 的公网 IP..."
-          RUNNER_IP=$(curl -s https://api.ipify.org)
+          RUNNER_IP=$(/usr/bin/curl -s --connect-timeout 10 https://api.ipify.org)
           echo "获取到的 IP 地址为: $RUNNER_IP"
           echo "ipv4=$RUNNER_IP" >> $GITHUB_OUTPUT
+          
+          # 用另一个服务验证
+          echo "用另一个服务验证:"
+          /usr/bin/curl -s --connect-timeout 10 https://ipinfo.io/ip
+          echo ""
 
       - name: 打印 Runner 公网 IP
         run: |
